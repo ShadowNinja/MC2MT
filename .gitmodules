@@ -1,0 +1,3 @@
+[submodule "nbt"]
+	path = nbt
+	url = https://github.com/ShadowNinja/NBT-CPP.git
