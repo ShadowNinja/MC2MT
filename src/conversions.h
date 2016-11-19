@@ -111,6 +111,8 @@
 #define USE_MOD_HARDENED_CLAY 1
 #define USE_MOD_HOMEDECOR 1
 #define USE_MOD_BOWS 1
+#define USE_MOD_XDECOR 1
+#define USE_MOD_LAPIS 1
 
 
 CONV(0, "minecraft:air", "air");
@@ -179,9 +181,17 @@ CONV_DP(18, "minecraft:leaves", "7,15", "default:jungleleaves", 1);
 
 CONV(19, "minecraft:sponge", "default:nyan_cat_rainbow");  // Sponge/wet sponge
 CONV(20, "minecraft:glass", "default:glass");
-CONV(21, "minecraft:lapis_ore", "default:stone_with_mese");
-CONV(22, "minecraft:lapis_block", "default:mese");
+
+#if USE_MOD_LAPIS
+	CONV(21, "minecraft:lapis_ore", "lapis:stone_with_lapis");
+	CONV(22, "minecraft:lapis_block", "lapis:lapis");
+#else
+	CONV(21, "minecraft:lapis_ore", "default:stone_with_mese");
+	CONV(22, "minecraft:lapis_block", "default:mese");
+#endif
+
 // 23: Dispenser
+
 CONV_D(24, "minecraft:sandstone", "0", "default:sandstone");
 CONV_D(24, "minecraft:sandstone", "1,2", "default:sandstonebrick"); // Chiseled/smooth sandstone
 
@@ -538,7 +548,7 @@ CONV(102, "minecraft:glass_pane", "xpanes:pane");
 
 CONV_DP(106, "minecraft:vine", nullptr, "default:leaves", 1);  // TODO: Use real vines
 
-// 107: Fence gate
+CONV_GATE(107, "minecraft:fence_gate", "doors:gate_wood");
 
 CONV_STAIR(108, "minecraft:brick_stairs", "stairs:stair_brick");
 
@@ -561,7 +571,14 @@ CONV(113, "minecraft:nether_brick_fence", "default:fence_wood");
 // 115: Nether wart
 // 116: Enchantment table
 // 117: Brewing stand
-// 118: Cauldron
+
+#if USE_MOD_XDECOR
+	CONV_D(118, "minecraft:cauldron", "0", "xdecor:cauldron_empty");
+	CONV_D(118, "minecraft:cauldron", "1", "xdecor:cauldron_empty");  // TODO: should be 1/3 full
+	CONV_D(118, "minecraft:cauldron", "2", "xdecor:cauldron_empty");  // TODO: should be 2/3 full
+	CONV_D(118, "minecraft:cauldron", "3", "xdecor:cauldron_empty");  // TODO: should be full
+#endif
+
 // 119: End portal
 // 120: End portal frame
 // 121: End stone
@@ -780,11 +797,11 @@ CONV_STAIR(180, "minecraft:red_sandstone_stairs", "stairs:stair_desert_cobble");
 CONV(181, "minecraft:double_stone_slab2", "default:desert_cobble");  // Double chiseled/smooth
 CONV_SLAB(182, "minecraft:stone_slab2", 0, 8, "stairs:slab_desert_cobble");
 
-CONV_GATE(183, "minecraft:spruce_fence_gate", "doors:gate");
-CONV_GATE(184, "minecraft:birch_fence_gate", "doors:gate");
-CONV_GATE(185, "minecraft:jungle_fence_gate", "doors:gate");
-CONV_GATE(186, "minecraft:dark_oak_fence_gate", "doors:gate");
-CONV_GATE(187, "minecraft:acacia_fence_gate", "doors:gate");
+CONV_GATE(183, "minecraft:spruce_fence_gate", "doors:gate_wood");
+CONV_GATE(184, "minecraft:birch_fence_gate", "doors:gate_pine_wood");
+CONV_GATE(185, "minecraft:jungle_fence_gate", "doors:gate_junglewood");
+CONV_GATE(186, "minecraft:dark_oak_fence_gate", "doors:gate_wood");
+CONV_GATE(187, "minecraft:acacia_fence_gate", "doors:gate_acacia_wood");
 
 CONV(188, "minecraft:spruce_fence", "default:fence_wood");
 CONV(189, "minecraft:birch_fence", "default:fence_wood");
