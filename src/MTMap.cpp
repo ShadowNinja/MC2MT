@@ -66,12 +66,13 @@ MTMap::MTMap(const std::string & path) :
 			nullptr), "opening database");
 
 	SQLOK(sqlite3_exec(db,
+		"PRAGMA synchronous=0;"
 		"CREATE TABLE IF NOT EXISTS `blocks` (\n"
 		"	`pos` INT PRIMARY KEY,\n"
 		"	`data` BLOB\n"
 		");\n",
 		nullptr, nullptr, nullptr),
-		"creating schema");
+		"initializing database");
 
 	PREPARE_STATEMENT(begin, "BEGIN");
 	PREPARE_STATEMENT(end, "COMMIT");
