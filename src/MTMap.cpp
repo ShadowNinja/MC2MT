@@ -126,11 +126,15 @@ bool MTMap::saveBlock(const MTPos &pos, const std::string &data)
 
 MTMap::~MTMap()
 {
-	FINALIZE_STATEMENT(begin);
-	FINALIZE_STATEMENT(end);
-	FINALIZE_STATEMENT(write);
+	try {
+		FINALIZE_STATEMENT(begin);
+		FINALIZE_STATEMENT(end);
+		FINALIZE_STATEMENT(write);
 
-	SQLOK(sqlite3_close(db), "closing database");
+		SQLOK(sqlite3_close(db), "closing database");
+	} catch (std::exception &e) {
+		std::cerr << "Failed to close database: " << e.what() <<std::endl;
+	}
 }
 
 
