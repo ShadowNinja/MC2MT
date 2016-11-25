@@ -44,7 +44,7 @@ void MCMap::listGroups(std::vector<MCGroup*> & v)
 	MCFormat format = MCFormat::Regions;
 	using dir_iter = fs::directory_iterator;
 	for (dir_iter it(path + DIR_DELIM "region"); it != dir_iter(); ++it) {
-		std::string filename = it->path().filename().native();
+		std::string filename = it->path().filename().string();
 
 		Tokenizer tok(filename);
 		std::string x_s, z_s, ext;
