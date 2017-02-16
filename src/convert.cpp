@@ -164,7 +164,7 @@ static void finish_door(MTSector *sector, MTBlock *block, uint16_t idx)
 #endif  // MC_VERSION < 102
 
 
-void convert_inventory(const NBT::List &be_items, std::vector<MTItemStack> inv_items)
+void convert_inventory(const NBT::List &be_items, std::vector<MTItemStack> &inv_items)
 {
 	for (uint32_t i = 0; i < be_items.size; ++i) {
 		NBT::Compound & be_item = be_items.value[i];
