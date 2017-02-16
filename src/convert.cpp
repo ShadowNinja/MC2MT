@@ -164,10 +164,8 @@ static void finish_door(MTSector *sector, MTBlock *block, uint16_t idx)
 #endif  // MC_VERSION < 102
 
 
-std::vector<MTItemStack> convert_inventory(size_t size, const NBT::List &be_items)
+void convert_inventory(const NBT::List &be_items, std::vector<MTItemStack> inv_items)
 {
-	std::vector<MTItemStack> inv_items(size, MTItemStack());
-
 	for (uint32_t i = 0; i < be_items.size; ++i) {
 		NBT::Compound & be_item = be_items.value[i];
 
@@ -205,7 +203,6 @@ std::vector<MTItemStack> convert_inventory(size_t size, const NBT::List &be_item
 		if (cd->tool)
 			item.wear = data;
 	}
-	return inv_items;
 }
 
 
@@ -218,8 +215,14 @@ std::pair<bool, MTNodeMeta*> convert_chest(const NBT::Tag &te)
 			"list[current_player;main;0,5;8,4;]"},
 	};
 
+	NBT::Compound &te_map = te;
+	std::vector<MTItemStack> items(32, MTItemStack());
+	auto it = te_map.find("Items");
+	if (it != te_map.end())
+		convert_inventory(it->second, items);
+
 	auto * inv = new MTInventoryList {
-		{"main", MTInventory(8, convert_inventory(32, te["Items"]))},
+		{"main", MTInventory(8, std::move(items))},
 	};
 	return std::make_pair(true, new MTNodeMeta(&meta, inv, false, true));
 }
