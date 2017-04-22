@@ -29,7 +29,7 @@ include_directories(
 	"${NBT_SOURCE_DIR}/src"
 	"${CPFS_SOURCE_DIR}/src"
 	${ZLIB_INCLUDE_DIRS}
-	${SQLite3_INCLUDE_DIRS}
+	${SQLite3_INCLUDE_DIR}
 )
 
 if (MINGW)
