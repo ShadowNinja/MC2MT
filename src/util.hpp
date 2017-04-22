@@ -8,15 +8,12 @@
 #define ARRAY_SIZE(a) (sizeof(a)/sizeof(*a))
 
 #ifdef _WIN32
-#	define DIR_DELIM "\\"
 #	define fileno(x) _fileno(x)
 inline bool isatty(int fd)
 {
 	DWORD mode;
 	return GetConsoleMode((HANDLE)_get_osfhandle(fd), &mode);
 }
-#else
-#	define DIR_DELIM "/"
 #endif
 
 

@@ -10,8 +10,7 @@
 #include <fstream>
 #include <iostream>
 #include <csignal>
-#include <boost/filesystem/operations.hpp>
-namespace fs = boost::filesystem;
+#include "cpfs.h"
 
 
 #define CHUNK_OFS_POS(x, z) ((x & 0x1F) + (z & 0x1F) * 32) * 4
@@ -42,11 +41,23 @@ MCMap::MCMap(const std::string & path) :
 void MCMap::listGroups(std::vector<MCGroup*> & v)
 {
 	MCFormat format = MCFormat::Regions;
-	using dir_iter = fs::directory_iterator;
-	for (dir_iter it(path + DIR_DELIM "region"); it != dir_iter(); ++it) {
-		std::string filename = it->path().filename().string();
+	CpfsPath cp_path;
+	cpfs_path_create(&cp_path, (path + DIR_DELIM "region").c_str());
+	CpfsDirIter it;
+	if (!cpfs_dir_create(&it, &cp_path)) {
+		cpfs_path_destroy(&cp_path);
+	}
+	cpfs_path_destroy(&cp_path);
 
-		Tokenizer tok(filename);
+	while (cpfs_dir_next(&it)) {
+		CpfsPath filename;
+		cpfs_dir_name(&it, &filename);
+		char *filename_utf8 = cpfs_path_utf8(&filename);
+		std::string filename_str(filename_utf8);
+		cpfs_path_utf8_destroy(filename_utf8);
+
+		Tokenizer tok(filename_str);
+
 		std::string x_s, z_s, ext;
 		if (!tok.next(&ext, '.') || ext != "r") continue;
 		if (!tok.next(&x_s, '.')) continue;
@@ -78,8 +89,9 @@ void MCMap::listGroups(std::vector<MCGroup*> & v)
 			continue;
 		}
 
-		v.push_back(new MCGroup(filename, x, z, format));
+		v.push_back(new MCGroup(filename_str, x, z, format));
 	}
+	cpfs_dir_destroy(&it);
 }
 
 

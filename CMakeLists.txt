@@ -13,22 +13,22 @@ add_executable(${PROJECT_NAME}
 set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake/Modules/")
 
 add_subdirectory(nbt)
+add_subdirectory(cpfs)
 
 find_package(Threads REQUIRED)
-find_package(Boost REQUIRED COMPONENTS "filesystem" "system")
 find_package(SQLite3 REQUIRED)
 
 target_link_libraries(${PROJECT_NAME}
 	Threads::Threads
 	"nbt"
+	"CPFS"
 	${ZLIB_LIBRARY}
 	${SQLite3_LIBRARY}
-	${Boost_LIBRARIES}
 )
 include_directories(
 	"${NBT_SOURCE_DIR}/src"
+	"${CPFS_SOURCE_DIR}/src"
 	${ZLIB_INCLUDE_DIRS}
-	${Boost_INCLUDE_DIRS}
 	${SQLite3_INCLUDE_DIRS}
 )
 

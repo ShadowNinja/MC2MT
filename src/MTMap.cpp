@@ -7,8 +7,8 @@
 #include <iostream>
 #include <memory>
 #include <cassert>
-#include <boost/filesystem.hpp>
-namespace fs = boost::filesystem;
+#include <cstring>
+#include "cpfs.h"
 
 
 #define SER_FMT_VER_HIGHEST_WRITE 25
@@ -55,9 +55,14 @@ MTMap::MTMap(const std::string & path) :
 {
 	init_conversions();
 
-	if (!fs::is_directory(path) && !fs::create_directories(path))
+	CpfsPath cp_path;
+	cpfs_path_create(&cp_path, path.c_str());
+
+	if (!cpfs_is_directory(&cp_path) && !cpfs_create_directory(&cp_path))
 		throw std::runtime_error("Failed to create database save "
 				"directory: " + path);
+
+	cpfs_path_destroy(&cp_path);
 
 	sqlite3_config(SQLITE_CONFIG_SINGLETHREAD);
 

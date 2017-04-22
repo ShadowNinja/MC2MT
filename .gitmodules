@@ -1,3 +1,6 @@
 [submodule "nbt"]
 	path = nbt
 	url = https://github.com/ShadowNinja/NBT-CPP.git
+[submodule "cpfs"]
+	path = cpfs
+	url = https://github.com/ShadowNinja/CPFS.git
