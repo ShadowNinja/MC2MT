@@ -5,19 +5,26 @@
 #include <cstring>
 #include <iostream>
 
-#define MC_ID_MAX 348
+#define MC_ID_MAX 431
 #define MC_DATA_MAX 15
 
-static ConversionData conversion_table[MC_ID_MAX+1][MC_DATA_MAX+1] = {{{false, 0, CONTENT_IGNORE, nullptr}}};
+static ConversionData conversion_table[MC_ID_MAX+1][MC_DATA_MAX+1];
 static std::map<std::string, uint16_t> conversion_map;
 
 static void add_conversion(uint16_t mc_id, const char *mc_name,
 		const char *datas, const char *name, uint8_t param2, bool tool,
-		ConversionCallback cb)
+		ConversionCallback cb, bool conversion_type = false)
 {
-	assert(mc_id <= MC_ID_MAX);
 	content_t cid = MTMap::getId(name);
-	ConversionData cd {tool, param2, cid, cb};
+	ConversionData cd(cb, cid, param2, 0);
+
+	if (tool) {
+		cd.flags |= CD_FLAG_TOOL;
+	}
+
+	if (cb.item != nullptr && conversion_type) {
+		cd.flags |= CD_FLAG_ITEM_CB;
+	}
 
 	if (datas == nullptr) {
 		for (uint16_t i = 0; i < MC_DATA_MAX+1; ++i) {
@@ -45,7 +52,7 @@ bool get_conversion(const ConversionData **cd, uint16_t id, uint16_t data)
 		p = &(conversion_table[id][data]);
 	} else {
 		p = &(conversion_table[id][0]);
-		assert(p->cid == CONTENT_IGNORE || p->tool);
+		assert(p->cid == CONTENT_IGNORE || p->flags & CD_FLAG_TOOL);
 	}
 	*cd = p;
 	return p->cid != CONTENT_IGNORE;
@@ -167,7 +174,7 @@ static void finish_door(MTSector *sector, MTBlock *block, uint16_t idx)
 void convert_inventory(const NBT::List &be_items, std::vector<MTItemStack> &inv_items)
 {
 	for (uint32_t i = 0; i < be_items.size; ++i) {
-		NBT::Compound & be_item = be_items.value[i];
+		NBT::Tag & be_item = be_items.value[i];
 
 		uint8_t slot = be_item["Slot"].as<NBT::Byte>();
 		assert(slot < inv_items.size());
@@ -200,8 +207,11 @@ void convert_inventory(const NBT::List &be_items, std::vector<MTItemStack> &inv_
 
 		item.item = cd->cid;
 		item.count = be_item["Count"].as<NBT::Byte>();
-		if (cd->tool)
+		if (cd->flags & CD_FLAG_TOOL)
 			item.wear = data;
+		if (cd->cb.item && cd->flags & CD_FLAG_ITEM_CB) {
+			cd->cb.item(item, be_item);
+		}
 	}
 }
 
@@ -276,6 +286,76 @@ std::pair<bool, MTNodeMeta*> convert_sign(const NBT::Tag &te)
 		{"formspec", "field[text;;${text}]"},
 	};
 	return std::make_pair(true, new MTNodeMeta(fields, nullptr, true, false));
+}
+
+
+// Copied from Minetest
+std::string deserializeJsonString(const std::string &s)
+{
+	std::string res;
+
+	// Parse initial doublequote
+	if (s[0] != '"')
+		throw std::runtime_error("JSON string must start with doublequote");
+
+	// Parse characters
+	for (size_t i = 0; i < s.size(); ++i) {
+		switch (s[i]) {
+		case '"':
+			return res;
+		case '\\':
+			switch (s[++i]) {
+			case 'b': res.push_back('\b'); break;
+			case 'f': res.push_back('\f'); break;
+			case 'n': res.push_back('\n'); break;
+			case 'r': res.push_back('\r'); break;
+			case 't': res.push_back('\t'); break;
+			case 'u':
+				if (i + 4 >= s.size())
+					throw std::runtime_error("JSON string ended prematurely");
+				res.push_back((char)std::stoi(s.substr(i+1, 4), nullptr, 16));
+				i += 4;
+				break;
+			default:
+				res.push_back(s[i]);
+				break;
+			}
+			break;
+		default:
+			res.push_back(s[i]);
+		}
+	}
+
+	throw std::runtime_error("JSON string ended prematurely");
+}
+
+
+void convert_book_text(MTItemStack &item, NBT::Tag &mc_item)
+{
+	NBT::Tag tag = mc_item["Item"]["tag"];
+	std::string &m = item.meta;
+	m = "return {title=";
+	m += MTMap::serializeJsonString(tag["title"]);
+	m += ",owner=,";
+	m += MTMap::serializeJsonString(tag["author"]);
+	m += "text=";
+
+	NBT::List pages = tag["pages"];
+	std::string s;
+	for (size_t i = 0; i < pages.size; ++i) {
+		std::string pstr = static_cast<std::string>(pages.value[i]);
+		if (pstr[0] == '"') {
+			s += deserializeJsonString(pstr);
+		} else {
+			s += pstr;
+		}
+		if (i != pages.size - 1) {
+			s += "\n\n";
+		}
+	}
+
+	m += MTMap::serializeJsonString(s);
+	m += "}";
 }
 
 

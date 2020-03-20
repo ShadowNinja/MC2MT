@@ -7,6 +7,7 @@
 #define CONV_P(id, mcn, mtn, p2); CONV_DP(id, mcn, nullptr, mtn, p2)
 #define CONV_DP(id, mcn, datas, mtn, p2) CONV_DP_CB(id, mcn, datas, mtn, p2, nullptr)
 #define CONV_DP_CB(id, mcn, datas, mtn, p2, cb) CONV_ALL(id, mcn, datas, mtn, p2, false, cb)
+#define CONV_CB(id, mcn, mtn, cb) CONV_ALL(id, mcn, nullptr, mtn, 0, false, cb)
 #define CONV_TOOL(id, mcn, mtn) CONV_ALL(id, mcn, nullptr, mtn, 0, true, nullptr)
 
 #define CONV_STAIR(id, mcn, mtn) \
@@ -946,3 +947,120 @@ CONV(340, "minecraft:book", "default:book");
 #if USE_MOD_NETHER
 	CONV(348, "minecraft:glowstone_dust", "nether:glowstone");
 #endif
+
+// 349: Fish
+// 350: Cooked fish
+// 351: Dye
+// 352: Bone
+// 353: Sugar
+// 354: Cake
+
+CONV(355, "minecraft:bed", "beds:bed");
+
+// 356: Repeater
+// 357: Cookie
+// 358: Filled map
+// 359: Shears
+// 360: Melon
+// 361: Pumpkin Seeds
+// 362: Melon Seeds
+// 363: Beef
+// 364: Cooked beef
+// 365: Chicken
+// 366: Cooked chicken
+// 367: Rotten flesh
+// 368: Ender Pearl
+// 369: Blaze rod
+// 370: Ghast tear
+// 371: Gold nugget
+// 372: Nether wart
+// 373: Potion
+
+CONV(374, "minecraft:glass_bottle", "vessels:glass_bottle");
+
+// 375: Spider eye
+// 376: Fermented spider eye
+// 377: Blaze powder
+// 378: Magma cream
+// 379: Brewing stand
+// 380: Cauldron
+// 381: Ender eye
+// 382: Speckled melon
+// 383: Spawn egg
+// 384: Experience bottle
+// 385: Fire charge
+
+CONV(386, "minecraft:writable_book", "default:book");
+CONV_CB(387, "minecraft:written_book", "default:book_written", convert_book_text);
+
+// 388: Emerald
+// 389: Item frame
+// 390: Flower pot
+// 391: Carrot
+// 392: Potato
+// 393: Baked potato
+// 394: Poisonous potato
+// 395: Map
+// 396: Golden carrot
+// 397: Skull
+// 398: Carrot on a stick
+// 399: Nether star
+// 400: Pumpkin pie
+// 401: Fireworks
+// 402: Firework charge
+// 403: Enchanted book
+// 404: Comparator
+// 405: Netherbrick
+// 406: Quartz
+// 407: TNT minecart
+// 408: Hopper minecart
+
+CONV(409, "minecraft:prismarine_shard", "default:mese_crystal_fragment");
+CONV(410, "minecraft:prismarine_crystals", "default:mese_crystal");
+
+// 411: Rabbit
+// 412: Cooked rabbit
+// 413: Rabbit stew
+// 414: Rabbit foot
+// 415: Rabbit hide
+// 416: Armor stand
+// 417: Iron horse armor
+// 418: Golden horse armor
+// 419: Diamond horse armor
+// 420: Lead (as in leash)
+// 421: Name tag
+// 422: Command block minecart
+// 423: Mutton
+// 424: Cooked mutton
+// 425: Banner
+// 426: End crystal
+
+CONV(427, "minecraft:spruce_door", "doors:door_wood");
+CONV(428, "minecraft:birch_door", "doors:door_wood");
+CONV(429, "minecraft:jungle_door", "doors:door_wood");
+CONV(430, "minecraft:acacia_door", "doors:door_wood");
+CONV(431, "minecraft:dark_oak_door", "doors:door_wood");
+
+// 432: Chorus fruit
+// 433: Chorus fruit popped
+// 434: Beetroot
+// 435: Beetroot seeds
+// 436: Beetroot soup
+// 437: Dragon breath
+// 438: Splash potion
+// 439: Spectral arrow
+// 440: Tipped arrow
+// 441: Lingering potion
+// 442: Shield
+// 443: Elytra
+// 444: Spruce boat
+// 445: Birch boat
+// 446: Jungle boat
+// 447: Acacia boat
+// 448: Dark oak boat
+// 449: Totem of undying
+// 450: Shulker shell
+// 451: Unused.
+// 452: Iron nugget
+
+// 2256-2267: Records

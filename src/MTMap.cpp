@@ -202,7 +202,7 @@ MTBlock::MTBlock(const MCBlock & mcb)
 	// align MC water level (64) with MT water level (0).
 	pos = {(int16_t)mcb.pos.x, (int16_t)(mcb.pos.y - BLOCK_Y_OFFSET), (int16_t)mcb.pos.z};
 
-	const ConversionData default_cd = {false, 0, CONTENT_AIR, nullptr};
+	const ConversionData default_cd;
 
 	// Load all the nodes in the 16x16x16 block
 	for (uint16_t i = 0; i < NODES_PER_BLOCK; ++i) {
@@ -212,8 +212,8 @@ MTBlock::MTBlock(const MCBlock & mcb)
 			cd = &default_cd;
 		}
 
-		if (cd->cb) {
-			callbacks.emplace_back(i, cd->cb);
+		if (cd->cb.node != nullptr) {
+			callbacks.emplace_back(i, cd->cb.node);
 		}
 
 		content[i] = cd->cid;
@@ -427,7 +427,14 @@ void MTBlock::serializeInventoryList(std::string * data,
 			*data += MTMap::getName(item.item);
 			*data += ' ';
 			*data += std::to_string(item.count);
-			// TODO: Item meta?
+			if (item.wear > 0 || !item.meta.empty()) {
+				*data += ' ';
+				*data += std::to_string(item.wear);
+			}
+			if (!item.meta.empty()) {
+				*data += ' ';
+				*data += MTMap::serializeJsonString(item.meta);
+			}
 			*data += '\n';
 		}
 		// "EndInventoryList" ends Inventories, "EndInventory" ends InventoryLists.
@@ -435,4 +442,39 @@ void MTBlock::serializeInventoryList(std::string * data,
 	}
 end_inv:
 	*data += "EndInventory\n";
+}
+
+
+// Copied from Minetest
+std::string MTMap::serializeJsonString(const std::string &plain)
+{
+	std::string out = "\"";
+
+	for (size_t i = 0; i < plain.size(); i++) {
+		char c = plain[i];
+		switch (c) {
+		case '"':  out += "\\\""; break;
+		case '\\': out += "\\\\"; break;
+		case '/':  out += "\\/"; break;
+		case '\b': out += "\\b"; break;
+		case '\f': out += "\\f"; break;
+		case '\n': out += "\\n"; break;
+		case '\r': out += "\\r"; break;
+		case '\t': out += "\\t"; break;
+		default: {
+			if (c >= 32 && c <= 126) {
+				out += c;
+			} else {
+				char digits[5];
+				std::snprintf(digits, sizeof(digits), "%04x", (int)c);
+				out += "\\u";
+				out += digits;
+			}
+			break;
+		}
+		}
+	}
+
+	out += '"';
+	return out;
 }

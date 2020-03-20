@@ -42,10 +42,11 @@ template<> struct hash<MTPos> {
 */
 
 struct MTItemStack {
-	MTItemStack() : count(0), wear(0), item(CONTENT_IGNORE) {}
+	MTItemStack() : count(0), wear(0), item(CONTENT_IGNORE), meta() {}
 	uint16_t count;
 	uint16_t wear;
 	content_t item;
+	std::string meta;
 };
 
 
@@ -107,6 +108,8 @@ public:
 		*names = &unknown_mc_names;
 	}
 
+	static std::string serializeJsonString(const std::string &plain);
+
 private:
 	std::string path;
 
@@ -157,6 +160,6 @@ private:
 	void serializeInventoryList(std::string * data,
 		const MTInventoryList * inv_list) const;
 
-	std::vector<std::pair<uint16_t, ConversionCallback>> callbacks;
+	std::vector<std::pair<uint16_t, NodeConversionCallback>> callbacks;
 	std::vector<MTNodeMeta *> owned_meta;
 };
